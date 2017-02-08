@@ -1,23 +1,12 @@
 #[macro_use]
 extern crate glium;
 
-use std::fs::File;
 use std::path::Path;
 
 #[path = "../assets/teapot.rs"]
 mod teapot;
 
-fn file_get_contents(path: &Path) -> String
-{
-    use std::io::Read;
-
-    let mut file = File::open(&path).unwrap();
-
-    let mut contents = String::new();
-    file.read_to_string(&mut contents).unwrap();
-
-    contents
-}
+mod battles;
 
 fn main() {
     use glium::{DisplayBuild, Surface};
@@ -32,8 +21,8 @@ fn main() {
     let normals = glium::VertexBuffer::new(&display, &teapot::NORMALS).unwrap();
     let indices = glium::IndexBuffer::new(&display, PrimitiveType::TrianglesList, &teapot::INDICES).unwrap();
 
-    let vertex_shader_src = file_get_contents(&Path::new("assets/simple.vert"));
-    let fragment_shader_src = file_get_contents(&Path::new("assets/simple.frag"));
+    let vertex_shader_src = battles::file_get_contents(&Path::new("assets/simple.vert"));
+    let fragment_shader_src = battles::file_get_contents(&Path::new("assets/simple.frag"));
 
     let program = glium::Program::from_source(&display, &vertex_shader_src, &fragment_shader_src, None).unwrap();
 
@@ -48,7 +37,7 @@ fn main() {
             [0.0, 0.0, 2.0, 1.0f32],
         ];
 
-        let view = view_matrix(&[2.0, 1.0, 1.0], &[-2.0, -1.0, 1.0], &[0.0, 1.0, 0.0]);
+        let view = battles::view_matrix(&[2.0, 1.0, 1.0], &[-2.0, -1.0, 1.0], &[0.0, 1.0, 0.0]);
 
         let perspective = {
             let (width, height) = target.get_dimensions();
@@ -93,42 +82,5 @@ fn main() {
             }
         }
     }
-}
-
-fn view_matrix(position: &[f32; 3], direction: &[f32; 3], up: &[f32; 3]) -> [[f32; 4]; 4] {
-    let f = {
-        let f = direction;
-        let len = f[0] * f[0] + f[1] * f[1] + f[2] * f[2];
-        let len = len.sqrt();
-
-        [f[0] / len, f[1] / len, f[2] / len]
-    };
-
-    let s = [up[1] * f[2] - up[2] * f[1],
-             up[2] * f[0] - up[0] * f[2],
-             up[0] * f[1] - up[1] * f[0]];
-
-    let s_norm = {
-        let len = s[0] * s[0] + s[1] * s[1] + s[2] * s[2];
-        let len = len.sqrt();
-
-        [s[0] / len, s[1] / len, s[2] / len]
-    };
-
-    let u = [f[1] * s_norm[2] - f[2] * s_norm[1],
-             f[2] * s_norm[0] - f[0] * s_norm[2],
-             f[0] * s_norm[1] - f[1] * s_norm[0]];
-
-    let p = position;
-    let p = [-p[0] * s_norm[0] - p[1] * s_norm[1] - p[2] * s_norm[2],
-             -p[0] * u[0] - p[1] * u[1] - p[2] * u[2],
-             -p[0] * f[0] - p[1] * f[1] - p[2] * f[2]];
-
-    [
-        [s_norm[0], u[0], f[0], 0.0],
-        [s_norm[1], u[1], f[1], 0.0],
-        [s_norm[2], u[2], f[2], 0.0],
-        [p[0], p[1], p[2], 1.0]
-    ]
 }
 
