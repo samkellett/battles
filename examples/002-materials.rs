@@ -21,42 +21,50 @@ extern crate image;
 
 use std::collections::HashMap;
 
+// The internal representation of a material.
+#[derive(Debug)]
 struct Material {
     pub program: glium::Program,
     pub texture: glium::texture::Texture2d,
 }
 
-struct MaterialSource {
+// A non-owning implementation of the MaterialSource trait.
+struct MaterialView<'a> {
     // String key used to access this material.
-    pub name: String,
+    pub name: &'a str,
     // Access the vertex shader source code.
-    pub vertex_shader: String,
+    pub vertex_shader: &'a str,
     // Access the fragment shader source code.
-    pub fragment_shader: String,
+    pub fragment_shader: &'a str,
     // Access the path to the texture file.
-    pub texture_file: std::path::PathBuf,
+    pub texture_file: &'a std::path::Path,
     // The image type of the texture.
     pub texture_format: image::ImageFormat,
 }
 
+// A collection of materials.
 struct MaterialCollection {
     materials: HashMap<String, Material>,
 }
 
 impl MaterialCollection {
-    fn new<T>(display: &T, sources: &[MaterialSource]) -> MaterialCollection
-        where T: glium::backend::Facade
+    // Create a new material collection from an iterator of sources.
+    fn new<'a, D, I>(display: &D, sources: I) -> MaterialCollection
+        where D: glium::backend::Facade,
+              I: Iterator<Item = MaterialView<'a>>
     {
         let mut materials = HashMap::new();
-        for source in sources.iter() {
+        for source in sources {
+            // Build the shader program.
             let program = glium::Program::from_source(display,
-                                                      &source.vertex_shader,
-                                                      &source.fragment_shader,
+                                                      source.vertex_shader,
+                                                      source.fragment_shader,
                                                       None)
                 .unwrap();
 
+            // Build the texture.
             let texture = {
-                let file = std::fs::File::open(&source.texture_file).unwrap();
+                let file = std::fs::File::open(source.texture_file).unwrap();
                 let file = std::io::BufReader::new(file);
 
                 let image = image::load(file, source.texture_format)
@@ -64,49 +72,55 @@ impl MaterialCollection {
                     .to_rgba();
 
                 let image_dimensions = image.dimensions();
-                let image = glium::texture::RawImage2d::from_raw_rgba_reversed(image.into_raw(), image_dimensions);
+                let image = glium::texture::RawImage2d::from_raw_rgba_reversed(image.into_raw(),
+                                                                               image_dimensions);
 
                 glium::texture::Texture2d::new(display, image).unwrap()
             };
 
-            let material = Material { program: program, texture: texture };
-            materials.insert(source.name.clone(), material);
+            let material = Material {
+                program: program,
+                texture: texture,
+            };
+            materials.insert(source.name.to_owned(), material);
         }
 
         MaterialCollection { materials: materials }
+    }
+
+    // Get a reference to a registered material.
+    fn material(&self, name: &str) -> &Material {
+        self.materials.get(name).unwrap()
     }
 }
 
 fn main() {
     use glium::DisplayBuild;
-    use std::path::PathBuf;
 
-    let v = r#"
-        #version 140
-        in vec2 position;
-        void main() {
-            gl_Position = vec4(position, 0.0, 1.0);
-        }
-    "#;
-
-    let f = r#"
-        #version 140
-        out vec4 color;
-        void main() {
-            color = vec4(1.0, 0.0, 0.0, 1.0);
-        }
-    "#;
+    use std::path::Path;
 
     let display = glium::glutin::WindowBuilder::new()
         .build_glium()
         .unwrap();
 
-    let sources = vec![MaterialSource {
-                           name: "badger".to_owned(),
-                           vertex_shader: v.to_owned(),
-                           fragment_shader: f.to_owned(),
-                           texture_file: PathBuf::from("assets/opengl.png"),
-                           texture_format: image::PNG,
-                       }];
-    let collection = MaterialCollection::new(&display, &sources);
+    // Example shaders.
+    let v = include_str!("../assets/simple.vert");
+    let f = include_str!("../assets/simple.frag");
+
+    // An example material.
+    let material = MaterialView {
+        name: "badger",
+        vertex_shader: v,
+        fragment_shader: f,
+        texture_file: &Path::new("assets/opengl.png"),
+        texture_format: image::PNG,
+    };
+
+    // Load all our materials.
+    let sources = vec![material];
+    let collection = MaterialCollection::new(&display, sources.into_iter());
+
+    // Access the badger material.
+    let badger_mat = collection.material("badger");
+    println!("{:?}", badger_mat);
 }
