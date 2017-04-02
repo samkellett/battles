@@ -6,4 +6,4 @@ authors = ["Sam Kellett <samkellett@gmail.com>"]
 [dependencies]
 glium = "0.16.0"
 image = "0.12.2"
-
+cgmath = "0.12.0"
