@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufReader;
 
-use super::{Material, MaterialView};
+use super::{Material, MaterialSource};
 
 // A collection of materials.
 pub struct MaterialCollection {
@@ -14,25 +14,26 @@ pub struct MaterialCollection {
 
 impl MaterialCollection {
     // Create a new material collection from an iterator of sources.
-    pub fn new<'a, D, I>(display: &D, sources: I) -> MaterialCollection
+    pub fn new<D, I>(display: &D, sources: I) -> MaterialCollection
         where D: glium::backend::Facade,
-              I: Iterator<Item = MaterialView<'a>>
+              I: Iterator,
+              I::Item: MaterialSource,
     {
         let mut materials = HashMap::new();
         for source in sources {
             // Build the shader program.
             let program = glium::Program::from_source(display,
-                                                      source.vertex_shader,
-                                                      source.fragment_shader,
+                                                      source.vertex_shader(),
+                                                      source.fragment_shader(),
                                                       None)
                 .unwrap();
 
             // Build the texture.
             let texture = {
-                let file = File::open(source.texture_file).unwrap();
+                let file = File::open(source.texture_file()).unwrap();
                 let file = BufReader::new(file);
 
-                let image = image::load(file, source.texture_format)
+                let image = image::load(file, source.texture_format())
                     .unwrap()
                     .to_rgba();
 
@@ -47,7 +48,7 @@ impl MaterialCollection {
                 program: program,
                 texture: texture,
             };
-            materials.insert(source.name.to_owned(), material);
+            materials.insert(source.name().to_owned(), material);
         }
 
         MaterialCollection { materials: materials }

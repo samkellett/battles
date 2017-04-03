@@ -2,17 +2,22 @@ extern crate image;
 
 use std::path::Path;
 
+use super::MaterialSource;
+
 // A non-owning implementation of the MaterialSource trait.
 pub struct MaterialView<'a> {
-    // String key used to access this material.
     pub name: &'a str,
-    // Access the vertex shader source code.
     pub vertex_shader: &'a str,
-    // Access the fragment shader source code.
     pub fragment_shader: &'a str,
-    // Access the path to the texture file.
     pub texture_file: &'a Path,
-    // The image type of the texture.
     pub texture_format: image::ImageFormat,
+}
+
+impl<'a> MaterialSource for MaterialView<'a> {
+    fn name(&self) -> &str { self.name }
+    fn vertex_shader(&self) -> &str { self.vertex_shader }
+    fn fragment_shader(&self) -> &str { self.fragment_shader }
+    fn texture_file(&self) -> &Path { self.texture_file }
+    fn texture_format(&self) -> image::ImageFormat { self.texture_format }
 }
 
