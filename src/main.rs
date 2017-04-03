@@ -17,7 +17,7 @@ fn main() {
     let display = glium::glutin::WindowBuilder::new()
         .build_glium()
         .unwrap();
- 
+
     // Example shaders.
     let v = include_str!("../assets/shaders/basic.vert");
     let f = include_str!("../assets/shaders/basic.frag");

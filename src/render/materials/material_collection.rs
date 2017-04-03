@@ -5,8 +5,7 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufReader;
 
-use render::materials::Material;
-use render::materials::MaterialView;
+use super::{Material, MaterialView};
 
 // A collection of materials.
 pub struct MaterialCollection {
@@ -56,7 +55,7 @@ impl MaterialCollection {
 
     // Get a reference to a registered material.
     pub fn material(&self, name: &str) -> &Material {
-        self.materials.get(name).unwrap()
+        &self.materials[name]
     }
 }
 

@@ -28,18 +28,35 @@ struct Material {
     pub texture: glium::texture::Texture2d,
 }
 
+// A trait that provides a representation of a material.
+trait MaterialSource {
+    // Identifier key used to access this material.
+    fn name(&self) -> &str;
+    // Access the vertex shader source code.
+    fn vertex_shader(&self) -> &str;
+    // Access the fragment shader source code.
+    fn fragment_shader(&self) -> &str;
+    // Access the path to the texture file.
+    fn texture_file(&self) -> &std::path::Path;
+    // The image type of the texture.
+    fn texture_format(&self) -> image::ImageFormat;
+}
+
 // A non-owning implementation of the MaterialSource trait.
 struct MaterialView<'a> {
-    // String key used to access this material.
     pub name: &'a str,
-    // Access the vertex shader source code.
     pub vertex_shader: &'a str,
-    // Access the fragment shader source code.
     pub fragment_shader: &'a str,
-    // Access the path to the texture file.
     pub texture_file: &'a std::path::Path,
-    // The image type of the texture.
     pub texture_format: image::ImageFormat,
+}
+
+impl<'a> MaterialSource for MaterialView<'a> {
+    fn name(&self) -> &str { self.name }
+    fn vertex_shader(&self) -> &str { self.vertex_shader }
+    fn fragment_shader(&self) -> &str { self.fragment_shader }
+    fn texture_file(&self) -> &std::path::Path { self.texture_file }
+    fn texture_format(&self) -> image::ImageFormat { self.texture_format }
 }
 
 // A collection of materials.
@@ -48,26 +65,27 @@ struct MaterialCollection {
 }
 
 impl MaterialCollection {
-    // Create a new material collection from an iterator of sources.
-    fn new<'a, D, I>(display: &D, sources: I) -> MaterialCollection
+    // Create a new material collection from an iterator of MaterialSource's.
+    fn new<D, I>(display: &D, sources: I) -> MaterialCollection
         where D: glium::backend::Facade,
-              I: Iterator<Item = MaterialView<'a>>
+              I: Iterator,
+              I::Item: MaterialSource,
     {
         let mut materials = HashMap::new();
         for source in sources {
             // Build the shader program.
             let program = glium::Program::from_source(display,
-                                                      source.vertex_shader,
-                                                      source.fragment_shader,
+                                                      source.vertex_shader(),
+                                                      source.fragment_shader(),
                                                       None)
                 .unwrap();
 
             // Build the texture.
             let texture = {
-                let file = std::fs::File::open(source.texture_file).unwrap();
+                let file = std::fs::File::open(source.texture_file()).unwrap();
                 let file = std::io::BufReader::new(file);
 
-                let image = image::load(file, source.texture_format)
+                let image = image::load(file, source.texture_format())
                     .unwrap()
                     .to_rgba();
 
@@ -82,7 +100,7 @@ impl MaterialCollection {
                 program: program,
                 texture: texture,
             };
-            materials.insert(source.name.to_owned(), material);
+            materials.insert(source.name().to_owned(), material);
         }
 
         MaterialCollection { materials: materials }
@@ -90,7 +108,7 @@ impl MaterialCollection {
 
     // Get a reference to a registered material.
     fn material(&self, name: &str) -> &Material {
-        self.materials.get(name).unwrap()
+        &self.materials[name]
     }
 }
 
@@ -112,7 +130,7 @@ fn main() {
         name: "badger",
         vertex_shader: v,
         fragment_shader: f,
-        texture_file: &Path::new("assets/opengl.png"),
+        texture_file: Path::new("assets/opengl.png"),
         texture_format: image::PNG,
     };
 
