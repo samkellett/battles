@@ -19,35 +19,35 @@ fn main() {
         .build_glium()
         .unwrap();
 
-    // An example texture.
-    let texture = TextureSource {
-        texture_file: std::path::PathBuf::from("assets/opengl.png"),
-        texture_format: image::PNG,
-        slices: vec![
-            SliceSource { name: "badger".to_owned(), origin: cgmath::vec2(0, 0), dimensions: cgmath::vec2(600, 297) },
-        ]
-    };
-
     // Load all our textures.
     let textures = {
+        // An example texture.
+        let texture = TextureSource {
+            texture_file: std::path::PathBuf::from("assets/opengl.png"),
+            texture_format: image::PNG,
+            slices: vec![
+                SliceSource { name: "badger".to_owned(), origin: cgmath::vec2(0, 0), dimensions: cgmath::vec2(600, 297) },
+            ]
+        };
+
         let sources = vec![texture];
         TextureCollection::new(&display, sources.into_iter())
     };
 
-    // Example shaders.
-    let v = include_str!("../assets/shaders/basic.vert");
-    let f = include_str!("../assets/shaders/basic.frag");
-
-    // An example material.
-    let material = MaterialView {
-        name: "badger",
-        vertex_shader: v,
-        fragment_shader: f,
-        texture: textures.texture("badger"),
-    };
-
     // Load all materials needed the game.
     let materials = {
+        // Example shaders.
+        let v = include_str!("../assets/shaders/basic.vert");
+        let f = include_str!("../assets/shaders/basic.frag");
+
+        // An example material.
+        let material = MaterialView {
+            name: "badger",
+            vertex_shader: v,
+            fragment_shader: f,
+            texture: textures.texture("badger"),
+        };
+
         let sources = vec![material];
         MaterialCollection::new(&display, sources.into_iter())
     };
