@@ -10,6 +10,8 @@ use render::materials::MaterialCollection;
 use render::materials::MaterialView;
 use render::sprites::Mesh;
 use render::sprites::Sprite;
+use render::transform::Transform;
+use render::transform::Rotation;
 
 fn main() {
     use glium::{DisplayBuild, Surface};
@@ -52,6 +54,8 @@ fn main() {
     };
 
     // The event loop.
+    let mut transform = Transform::new();
+
     loop {
         let mut target = display.draw();
         target.clear_color_and_depth((0.99, 0.83, 0.11, 1.0), 1.0);
@@ -69,9 +73,10 @@ fn main() {
         };
 
         use cgmath::One;
-        sprite.rotation += 1.0 / 90.0 * 360.0;
+        //sprite.rotation += 1.0 / 90.0 * 360.0;
+        transform.rotate_z(Rotation::Deg(360.0 / 60.0));
         sprite.render(&mut target,
-                      &cgmath::Matrix4::one(),
+                      &transform,
                       &perspective.into(),
                       &params);
 
