@@ -24,7 +24,7 @@ fn main() {
         texture_file: std::path::PathBuf::from("assets/opengl.png"),
         texture_format: image::PNG,
         slices: vec![
-            SliceSource { name: "badger".to_owned(), origin: cgmath::vec2(0, 0), dimensions: cgmath::vec2(600, 297) },
+            SliceSource { name: "badger".to_owned(), origin: cgmath::vec2(300, 150), dimensions: cgmath::vec2(300, 150) },
         ]
     };
 
@@ -54,8 +54,13 @@ fn main() {
 
     let badger_mat = materials.material("badger");
 
-    let mesh = Mesh::square(1.0);
-    let mut sprite = Sprite::new(&mesh, &badger_mat, &display);
+    /*
+    let mut sprite = {
+        let mesh = Mesh::square(1.0);
+        Sprite::from_mesh(mesh, &badger_mat, &display)
+    };
+    */
+    let mut sprite = Sprite::from_material(&badger_mat, &display);
 
     let params = glium::DrawParameters {
         depth: glium::Depth {
