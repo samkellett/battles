@@ -8,16 +8,16 @@ use std::io::BufReader;
 use super::{Material, MaterialSource};
 
 // A collection of materials.
-pub struct MaterialCollection {
-    materials: HashMap<String, Material>,
+pub struct MaterialCollection<'a> {
+    materials: HashMap<String, Material<'a>>,
 }
 
-impl MaterialCollection {
+impl<'a> MaterialCollection<'a> {
     // Create a new material collection from an iterator of sources.
-    pub fn new<D, I>(display: &D, sources: I) -> MaterialCollection
+    pub fn new<D, I>(display: &D, sources: I) -> MaterialCollection<'a>
         where D: glium::backend::Facade,
               I: Iterator,
-              I::Item: MaterialSource,
+              I::Item: MaterialSource<'a>,
     {
         let mut materials = HashMap::new();
         for source in sources {
@@ -28,25 +28,9 @@ impl MaterialCollection {
                                                       None)
                 .unwrap();
 
-            // Build the texture.
-            let texture = {
-                let file = File::open(source.texture_file()).unwrap();
-                let file = BufReader::new(file);
-
-                let image = image::load(file, source.texture_format())
-                    .unwrap()
-                    .to_rgba();
-
-                let image_dimensions = image.dimensions();
-                let image = glium::texture::RawImage2d::from_raw_rgba_reversed(image.into_raw(),
-                                                                               image_dimensions);
-
-                glium::texture::Texture2d::new(display, image).unwrap()
-            };
-
-            let material = Material {
+            let material: Material<'a> = Material {
                 program: program,
-                texture: texture,
+                texture: source.texture(),
             };
             materials.insert(source.name().to_owned(), material);
         }

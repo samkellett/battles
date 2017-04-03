@@ -27,7 +27,7 @@ pub struct TextureCollection {
 }
 
 impl TextureCollection {
-    fn new<D, I>(display: &D, sources: I) -> TextureCollection
+    pub fn new<D, I>(display: &D, sources: I) -> TextureCollection
         where D: glium::backend::Facade,
               I: Iterator<Item=TextureSource>,
     {
@@ -70,7 +70,7 @@ impl TextureCollection {
     }
 
     // Get a reference to a registered material.
-    fn texture(&self, name: &str) -> Texture {
+    pub fn texture(&self, name: &str) -> Texture {
         let view = &self.views[name];
         Texture {
             texture: &self.textures[view.id],

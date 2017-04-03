@@ -9,14 +9,14 @@ use render::transform::Transform;
 #[derive(Debug)]
 pub struct Sprite<'a> {
     mesh: &'a Mesh,
-    material: &'a Material,
+    material: &'a Material<'a>,
     vertex_buffer: glium::VertexBuffer<Vertex>,
     indices_buffer: glium::IndexBuffer<u16>,
 }
 
 impl<'a> Sprite<'a> {
     pub fn new<T: glium::backend::Facade>(mesh: &'a Mesh,
-                                          material: &'a Material,
+                                          material: &'a Material<'a>,
                                           display: &T)
                                           -> Sprite<'a> {
         let positions = glium::VertexBuffer::new(display, &mesh.verts).unwrap();
@@ -48,7 +48,7 @@ impl<'a> Sprite<'a> {
                   &self.material.program,
                   &uniform! { modelView: array4x4(transform.matrix),
                               perspective: array4x4(*projection),
-                              diffuse_tex: &self.material.texture },
+                              diffuse_tex: self.material.texture.texture },
                   params)
             .unwrap();
     }

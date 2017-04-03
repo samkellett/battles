@@ -6,12 +6,11 @@ extern crate image;
 mod render;
 
 use std::path::Path;
-use render::materials::MaterialCollection;
-use render::materials::MaterialView;
-use render::sprites::Mesh;
-use render::sprites::Sprite;
-use render::transform::Transform;
-use render::transform::Rotation;
+
+use render::materials::{MaterialCollection, MaterialView};
+use render::sprites::{Mesh, Sprite};
+use render::textures::{TextureCollection, TextureSource, SliceSource};
+use render::transform::{Rotation, Transform};
 
 fn main() {
     use glium::{DisplayBuild, Surface};
@@ -19,6 +18,21 @@ fn main() {
     let display = glium::glutin::WindowBuilder::new()
         .build_glium()
         .unwrap();
+
+    // An example texture.
+    let texture = TextureSource {
+        texture_file: std::path::PathBuf::from("assets/opengl.png"),
+        texture_format: image::PNG,
+        slices: vec![
+            SliceSource { name: "badger".to_owned(), origin: cgmath::vec2(0, 0), dimensions: cgmath::vec2(600, 297) },
+        ]
+    };
+
+    // Load all our textures.
+    let textures = {
+        let sources = vec![texture];
+        TextureCollection::new(&display, sources.into_iter())
+    };
 
     // Example shaders.
     let v = include_str!("../assets/shaders/basic.vert");
@@ -29,8 +43,7 @@ fn main() {
         name: "badger",
         vertex_shader: v,
         fragment_shader: f,
-        texture_file: &Path::new("assets/opengl.png"),
-        texture_format: image::PNG,
+        texture: textures.texture("badger"),
     };
 
     // Load all materials needed the game.
