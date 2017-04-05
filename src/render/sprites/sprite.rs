@@ -8,17 +8,17 @@ use render::transform::Transform;
 
 #[derive(Debug)]
 pub struct Sprite<'a> {
-    mesh: &'a Mesh,
+    mesh: Mesh,
     material: &'a Material,
     vertex_buffer: glium::VertexBuffer<Vertex>,
     indices_buffer: glium::IndexBuffer<u16>,
 }
 
 impl<'a> Sprite<'a> {
-    pub fn new<T: glium::backend::Facade>(mesh: &'a Mesh,
-                                          material: &'a Material,
-                                          display: &T)
-                                          -> Sprite<'a> {
+    pub fn from_mesh<T: glium::backend::Facade>(mesh: Mesh,
+                                                material: &'a Material,
+                                                display: &T)
+                                                -> Sprite<'a> {
         let positions = glium::VertexBuffer::new(display, &mesh.verts).unwrap();
         let indices = glium::IndexBuffer::new(display,
                                               glium::index::PrimitiveType::TrianglesList,
@@ -31,6 +31,13 @@ impl<'a> Sprite<'a> {
             vertex_buffer: positions,
             indices_buffer: indices,
         }
+    }
+
+    pub fn from_material<T: glium::backend::Facade>(material: &'a Material,
+                                                    display: &T)
+                                                    -> Sprite<'a> {
+        let mesh = Mesh::square(1.0);
+        Sprite::from_mesh(mesh, material, display)
     }
 
     pub fn render(&self,

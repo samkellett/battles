@@ -42,7 +42,7 @@ fn main() {
     let badger_mat = materials.material("badger");
 
     let mesh = Mesh::square(1.0);
-    let mut sprite = Sprite::new(&mesh, &badger_mat, &display);
+    let mut sprite = Sprite::from_mesh(Mesh::square(1.0), &badger_mat, &display);
 
     let params = glium::DrawParameters {
         depth: glium::Depth {
@@ -73,7 +73,6 @@ fn main() {
         };
 
         use cgmath::One;
-        //sprite.rotation += 1.0 / 90.0 * 360.0;
         transform.rotate_z(Rotation::Deg(360.0 / 60.0));
         sprite.render(&mut target,
                       &transform,
