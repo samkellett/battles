@@ -11,19 +11,18 @@ pub struct Window {
 
 impl Window {
     pub fn new() -> Window {
-        let facade = WindowBuilder::new()
-            .build_glium()
-            .unwrap();
+        let facade = WindowBuilder::new().build_glium().unwrap();
 
         Window { facade: facade }
     }
 
-    pub fn create_vertex_buffer<T> (&self, vertices: &Vec<T>) -> VertexBuffer<T>
-    where T: Vertex {
+    pub fn create_vertex_buffer<T>(&self, vertices: &Vec<T>) -> VertexBuffer<T>
+        where T: Vertex
+    {
         VertexBuffer::new(&self.facade, vertices).unwrap()
     }
 
-    pub fn create_index_buffer (&self, indices: &Vec<u16>) -> IndexBuffer<u16> {
+    pub fn create_index_buffer(&self, indices: &Vec<u16>) -> IndexBuffer<u16> {
         IndexBuffer::new(&self.facade, PrimitiveType::TrianglesList, indices).unwrap()
     }
 

@@ -20,9 +20,6 @@ pub struct Sprite<'a> {
 impl<'a> Sprite<'a> {
     pub fn from_mesh(mesh: Mesh, material: &'a Material, window: &Window) -> Sprite<'a> {
         let vertex_buffer = window.create_vertex_buffer(&mesh.verts);
-        //let vertex_buffer = VertexBuffer::new(&window.facade, &mesh.verts).unwrap();
-        //let indices_buffer = IndexBuffer::new(&window.facade, PrimitiveType::TrianglesList, &mesh.indices)
-            //.unwrap();
         let indices_buffer = window.create_index_buffer(&mesh.indices);
 
         Sprite {
