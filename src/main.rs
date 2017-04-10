@@ -49,7 +49,7 @@ fn main() {
 
     let badger_mat = materials.material("badger");
 
-    let sprite = Sprite::from_mesh(Mesh::square(1.0), &badger_mat, &window.facade);
+    let sprite = Sprite::from_mesh(Mesh::square(1.0), &badger_mat, &window);
 
     let params = glium::DrawParameters {
         depth: glium::Depth {

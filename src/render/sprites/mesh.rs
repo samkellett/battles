@@ -54,19 +54,19 @@ impl Mesh {
 
         let mut verts: Vec<Vertex> = Vec::new();
         verts.push(Vertex {
-                       position: (-1.0, 1.0),
+                       position: (-1.0 * size, 1.0 * size),
                        tex_coords: (scaled_origin.0, top_right.1),
                    });
         verts.push(Vertex {
-                       position: (1.0, 1.0),
+                       position: (1.0 * size, 1.0 * size),
                        tex_coords: (top_right.0, top_right.1),
                    });
         verts.push(Vertex {
-                       position: (1.0, -1.0),
+                       position: (1.0 * size, -1.0 * size),
                        tex_coords: (top_right.0, scaled_origin.1),
                    });
         verts.push(Vertex {
-                       position: (-1.0, -1.0),
+                       position: (-1.0 * size, -1.0 * size),
                        tex_coords: (scaled_origin.0, scaled_origin.1),
                    });
 
