@@ -1,0 +1,29 @@
+At the moment, we have a sprite, that to render, requires:
+    a glium::Frame 
+    two transforms
+    a glium::DrawParameters
+
+it uses these to call target.draw(vertex_buffer,
+                                  indicies_buffer, 
+                                  shader_program,
+                                  bunch'o'uniforms,
+                                  draw_parameters)
+
+what if there was a Renderer
+then Renderer had a method, draw_mesh
+
+    fn draw_mesh(mesh, texture, shader, model_view_matrix)
+
+and could even have a method, draw_texture
+
+    fn draw_texture(texture, shader, model_view_matrix)
+
+The square mesh used for drawing textures could be stashed in the renderer
+
+impl Sprite {
+    fn draw(&self, &renderer) {
+        let matrix = make_matrix(self.position, self.rotation, self.scale);
+        renderer.draw(self.texture, self.shader, matrix);
+    }
+}
+
