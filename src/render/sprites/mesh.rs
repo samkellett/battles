@@ -15,12 +15,8 @@ impl Mesh {
     }
 
     pub fn square(size: f32) -> Mesh {
-        fn clamp (x: f32) -> f32 {
-            if x < 0.0 {
-                0.0
-            } else {
-                x
-            }
+        fn clamp(x: f32) -> f32 {
+            if x < 0.0 { 0.0 } else { x }
         }
 
         let vx = vec![-1.0, 1.0, 1.0, -1.0];
