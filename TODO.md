@@ -3,7 +3,6 @@
 - [x] Be able to load materials from disk (shader program and texture).
 - [ ] Be able to draw a map of squares.
 
-
 enum Components {
     Tranform(f32, f32, f32),
     Renderable(Sprite, Mesh),
@@ -15,19 +14,21 @@ struct GameObject {
 
 fn main()
 {
-    let updater = UpdateEngine::new(...)
-    let renderer = RenderEngine::new(...)
+    let config = Config::from_file("assets/game.toml")
 
-    let textures = ...
-    let materials = ...
+    // Initialise
+    let game_objects = GameObjects::from_config(&config);
+        // ...internally... a vector of GameObjects.
 
-    let game_objects = ...
+    // Initialse engines.
+    let renderer = RenderEngine::from_config(&config);
+        // ...internally...
+        let textures = ...
+        let materials = ...
 
-    updater.load(game_objects)
-    renderer.load(game_objects)
+        //  ...makes a vector of references to renderable components.
 
     loop {
-        updater.update()
         renderer.draw()
     }
 }

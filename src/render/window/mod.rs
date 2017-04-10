@@ -5,13 +5,18 @@ use glium::{Surface, DisplayBuild, VertexBuffer, Frame, Vertex, IndexBuffer};
 use glium::glutin::WindowBuilder;
 use glium::index::PrimitiveType;
 
+use config::Config;
+
 pub struct Window {
     pub facade: glutin::GlutinFacade,
 }
 
 impl Window {
-    pub fn new() -> Window {
-        let facade = WindowBuilder::new().build_glium().unwrap();
+    pub fn new(config: &Config) -> Window {
+        let facade = WindowBuilder::new()
+            .with_title(config.title.clone())
+            .build_glium()
+            .unwrap();
 
         Window { facade: facade }
     }

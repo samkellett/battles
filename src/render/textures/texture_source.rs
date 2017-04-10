@@ -3,15 +3,16 @@ extern crate image;
 
 use std::path::PathBuf;
 
+#[derive(Debug, Deserialize)]
 pub struct SliceSource {
     pub name: String,
-    pub origin: cgmath::Vector2<i32>,
-    pub dimensions: cgmath::Vector2<i32>,
+    pub origin: [i32; 2],
+    pub dimensions: [i32; 2],
 }
 
+#[derive(Debug, Deserialize)]
 pub struct TextureSource {
     pub texture_file: PathBuf,
-    pub texture_format: image::ImageFormat,
     pub slices: Vec<SliceSource>,
 }
 

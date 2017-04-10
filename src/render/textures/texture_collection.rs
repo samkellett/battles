@@ -40,7 +40,7 @@ impl TextureCollection {
                 let file = File::open(source.texture_file).unwrap();
                 let file = BufReader::new(file);
 
-                image::load(file, source.texture_format)
+                image::load(file, image::PNG)
                     .unwrap()
                     .to_rgba()
             };
@@ -59,8 +59,8 @@ impl TextureCollection {
                 // Build the slice.
                 let view = TextureSlice {
                     id: next_id,
-                    origin: slice.origin,
-                    dimensions: slice.dimensions,
+                    origin: cgmath::vec2(slice.origin[0], slice.origin[1]),
+                    dimensions: cgmath::vec2(slice.dimensions[0], slice.dimensions[1]),
                 };
                 views.insert(slice.name.to_owned(), view);
             }

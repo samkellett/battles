@@ -1,33 +1,31 @@
 #[macro_use]
+extern crate serde_derive;
+
+#[macro_use]
 extern crate glium;
+
 extern crate cgmath;
 extern crate image;
 
+mod config;
 mod render;
+
+use config::Config;
 
 use render::materials::{MaterialCollection, MaterialView};
 use render::sprites::{Mesh, Sprite};
-use render::textures::{TextureCollection, TextureSource, SliceSource};
+use render::textures::{TextureCollection};
 use render::transform::{Rotation, Transform};
 use render::window::Window;
 
 fn main() {
-    let window = Window::new();
+    let config = Config::from_file("assets/example.toml");
+    println!("{:?}", config);
+
+    let window = Window::new(&config);
 
     // Load all our textures.
-    let textures = {
-        // An example texture.
-        let texture = TextureSource {
-            texture_file: std::path::PathBuf::from("assets/opengl.png"),
-            texture_format: image::PNG,
-            slices: vec![
-                SliceSource { name: "badger".to_owned(), origin: cgmath::vec2(0, 0), dimensions: cgmath::vec2(600, 297) },
-            ]
-        };
-
-        let sources = vec![texture];
-        TextureCollection::new(&window.facade, sources.into_iter())
-    };
+    let textures = TextureCollection::new(&window.facade, config.textures.into_iter());
 
     // Load all materials needed the game.
     let materials = {

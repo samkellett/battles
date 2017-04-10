@@ -1,0 +1,16 @@
+title = "Battles"
+
+[[textures]]
+texture_file = "assets/opengl.png"
+
+    [[textures.slices]]
+    name = "badger"
+    origin = [0, 0]
+    dimensions = [600, 297]
+
+#[[materials]]
+#name = "badger_mat"
+#vertex_shader = "assets/shaders/basic.vert"
+#fragment_shader = "assets/shaders/basic.frag"
+#texture = "badger"
+

@@ -2,8 +2,6 @@ extern crate glium;
 extern crate image;
 
 use std::collections::HashMap;
-use std::fs::File;
-use std::io::BufReader;
 
 use super::{Material, MaterialSource};
 
@@ -28,7 +26,7 @@ impl<'a> MaterialCollection<'a> {
                                                       None)
                 .unwrap();
 
-            let material: Material<'a> = Material {
+            let material = Material {
                 program: program,
                 texture: source.texture(),
             };
