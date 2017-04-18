@@ -4,34 +4,37 @@ use glium::backend::glutin_backend as glutin;
 use glium::{Surface, DisplayBuild, VertexBuffer, Frame, Vertex, IndexBuffer};
 use glium::glutin::WindowBuilder;
 use glium::index::PrimitiveType;
+use render::window::Window;
 
 use config::Config;
 
-pub struct Window {
+pub struct GliumWindow {
     pub facade: glutin::GlutinFacade,
 }
 
-impl Window {
-    pub fn new(config: &Config) -> Window {
+impl GliumWindow {
+    pub fn new(config: &Config) -> GliumWindow {
         let facade = WindowBuilder::new()
             .with_title(config.title.clone())
             .build_glium()
             .unwrap();
 
-        Window { facade: facade }
+        GliumWindow { facade: facade }
     }
+}
 
-    pub fn create_vertex_buffer<T>(&self, vertices: &Vec<T>) -> VertexBuffer<T>
+impl Window for GliumWindow {
+    fn create_vertex_buffer<T>(&self, vertices: &Vec<T>) -> VertexBuffer<T>
         where T: Vertex
     {
         VertexBuffer::new(&self.facade, vertices).unwrap()
     }
 
-    pub fn create_index_buffer(&self, indices: &Vec<u16>) -> IndexBuffer<u16> {
+    fn create_index_buffer(&self, indices: &Vec<u16>) -> IndexBuffer<u16> {
         IndexBuffer::new(&self.facade, PrimitiveType::TrianglesList, indices).unwrap()
     }
 
-    pub fn draw<F>(&self, draw_function: F)
+    fn draw<F>(&self, draw_function: F)
         where F: FnOnce(&mut Frame)
     {
         let mut frame = self.facade.draw();
@@ -42,7 +45,7 @@ impl Window {
         frame.finish().unwrap();
     }
 
-    pub fn get_aspect(&self) -> f32 {
+    fn get_aspect(&self) -> f32 {
         let window = self.facade.get_window().unwrap();
         let (width, height) = window.get_inner_size_pixels().unwrap();
         height as f32 / width as f32

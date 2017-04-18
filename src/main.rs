@@ -16,13 +16,14 @@ use render::materials::{MaterialCollection, MaterialView};
 use render::sprites::{Mesh, Sprite};
 use render::textures::{TextureCollection};
 use render::transform::{Rotation, Transform};
-use render::window::Window;
+use render::GliumWindow;
+use render::Window;
 
 fn main() {
     let config = Config::from_file("assets/example.toml");
     println!("{:?}", config);
 
-    let window = Window::new(&config);
+    let window = GliumWindow::new(&config);
 
     // Load all our textures.
     let textures = TextureCollection::new(&window.facade, config.textures.into_iter());

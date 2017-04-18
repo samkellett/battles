@@ -18,7 +18,7 @@ pub struct Sprite<'a> {
 }
 
 impl<'a> Sprite<'a> {
-    pub fn from_mesh(mesh: Mesh, material: &'a Material, window: &Window) -> Sprite<'a> {
+    pub fn from_mesh<T: Window>(mesh: Mesh, material: &'a Material, window: &T) -> Sprite<'a> {
         let vertex_buffer = window.create_vertex_buffer(&mesh.verts);
         let indices_buffer = window.create_index_buffer(&mesh.indices);
 
