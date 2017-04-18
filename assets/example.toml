@@ -8,9 +8,9 @@ texture_file = "assets/opengl.png"
     origin = [0, 0]
     dimensions = [600, 297]
 
-#[[materials]]
-#name = "badger_mat"
-#vertex_shader = "assets/shaders/basic.vert"
-#fragment_shader = "assets/shaders/basic.frag"
-#texture = "badger"
+[[materials]]
+name = "badger_mat"
+vertex_shader = "assets/shaders/basic.vert"
+fragment_shader = "assets/shaders/basic.frag"
+texture = "badger"
 

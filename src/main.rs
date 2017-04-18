@@ -12,7 +12,7 @@ mod render;
 
 use config::Config;
 
-use render::materials::{MaterialCollection, MaterialView};
+use render::materials::{MaterialCollection};
 use render::sprites::{Mesh, Sprite};
 use render::textures::{TextureCollection};
 use render::transform::{Rotation, Transform};
@@ -25,28 +25,13 @@ fn main() {
 
     let window = GliumWindow::new(&config);
 
-    // Load all our textures.
+    // Load all our textures and materials.
     let textures = TextureCollection::new(&window.facade, config.textures.into_iter());
+    let materials = MaterialCollection::new(&window.facade,
+                                            config.materials.into_iter(),
+                                            &textures);
 
-    // Load all materials needed the game.
-    let materials = {
-        // Example shaders.
-        let v = include_str!("../assets/shaders/basic.vert");
-        let f = include_str!("../assets/shaders/basic.frag");
-
-        // An example material.
-        let material = MaterialView {
-            name: "badger",
-            vertex_shader: v,
-            fragment_shader: f,
-            texture: textures.texture("badger"),
-        };
-
-        let sources = vec![material];
-        MaterialCollection::new(&window.facade, sources.into_iter())
-    };
-
-    let badger_mat = materials.material("badger");
+    let badger_mat = materials.material("badger_mat");
 
     let sprite = Sprite::from_mesh(Mesh::square(1.0), &badger_mat, &window);
 
