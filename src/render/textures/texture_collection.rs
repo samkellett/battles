@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufReader;
 
-use super::{Texture, TextureFileSource};
+use super::{Texture, TextureSource};
 
 // Internal representation of a texture in a texture collection.
 struct TextureSlice {
@@ -29,7 +29,7 @@ pub struct TextureCollection {
 impl TextureCollection {
     pub fn new<D, I>(display: &D, sources: I) -> TextureCollection
         where D: glium::backend::Facade,
-              I: Iterator<Item=TextureFileSource>,
+              I: Iterator<Item=TextureSource>,
     {
         let mut textures = Vec::new();
         let mut views = HashMap::new();

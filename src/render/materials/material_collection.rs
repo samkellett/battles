@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::path::Path;
 
-use super::{Material, MaterialFileSource};
+use super::{Material, MaterialSource};
 
 use render::textures::TextureCollection;
 
@@ -32,7 +32,7 @@ impl<'a> MaterialCollection<'a> {
     pub fn new<D, I>(display: &D, sources: I, textures: &'a TextureCollection)
         -> MaterialCollection<'a>
         where D: glium::backend::Facade,
-              I: Iterator<Item = MaterialFileSource>,
+              I: Iterator<Item = MaterialSource>,
     {
         let mut materials = HashMap::new();
         for source in sources {

@@ -3,14 +3,14 @@ extern crate toml;
 use std::fs::File;
 use std::path::Path;
 
-use render::materials::MaterialFileSource;
-use render::textures::TextureFileSource;
+use render::materials::MaterialSource;
+use render::textures::TextureSource;
 
 #[derive(Debug, Deserialize)]
 pub struct Config {
     pub title: String,
-    pub textures: Vec<TextureFileSource>,
-    pub materials: Vec<MaterialFileSource>,
+    pub textures: Vec<TextureSource>,
+    pub materials: Vec<MaterialSource>,
 }
 
 impl Config {
