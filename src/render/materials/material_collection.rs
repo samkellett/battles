@@ -23,14 +23,14 @@ fn file_get_contents<P>(path: P) -> String
 }
 
 // A collection of materials.
-pub struct MaterialCollection<'a> {
-    materials: HashMap<String, Material<'a>>,
+pub struct MaterialCollection {
+    materials: HashMap<String, Material>,
 }
 
-impl<'a> MaterialCollection<'a> {
+impl MaterialCollection {
     // Create a new material collection from an iterator of sources.
-    pub fn new<D, I>(display: &D, sources: I, textures: &'a TextureCollection)
-        -> MaterialCollection<'a>
+    pub fn new<D, I>(display: &D, sources: I, textures: &TextureCollection)
+        -> MaterialCollection
         where D: glium::backend::Facade,
               I: Iterator<Item = MaterialSource>,
     {

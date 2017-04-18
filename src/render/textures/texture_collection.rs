@@ -5,6 +5,7 @@ extern crate image;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufReader;
+use std::rc::Rc;
 
 use super::{Texture, TextureSource};
 
@@ -21,7 +22,7 @@ struct TextureSlice {
 // A collection of textures and mappings onto each one.
 pub struct TextureCollection {
     // All of the textures available.
-    textures: Vec<glium::texture::Texture2d>,
+    textures: Vec<Rc<glium::texture::Texture2d>>,
     // Maps of texture by name to it's source file and where in the file it is.
     views: HashMap<String, TextureSlice>,
 }
@@ -53,7 +54,7 @@ impl TextureCollection {
             };
 
             let next_id = textures.len();
-            textures.push(texture);
+            textures.push(Rc::new(texture));
 
             for slice in source.slices {
                 // Build the slice.
@@ -73,9 +74,9 @@ impl TextureCollection {
     pub fn texture(&self, name: &str) -> Texture {
         let view = &self.views[name];
         Texture {
-            texture: &self.textures[view.id],
-            origin: &view.origin,
-            dimensions: &view.dimensions,
+            texture: self.textures[view.id].clone(),
+            origin: view.origin,
+            dimensions: view.dimensions,
         }
     }
 }

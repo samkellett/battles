@@ -4,8 +4,8 @@ use render::textures;
 
 // The internal representation of a material.
 #[derive(Debug)]
-pub struct Material<'a> {
+pub struct Material {
     pub program: glium::Program,
-    pub texture: textures::Texture<'a>,
+    pub texture: textures::Texture,
 }
 

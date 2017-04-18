@@ -12,7 +12,7 @@ use cgmath::conv::array4x4;
 
 #[derive(Debug)]
 pub struct Sprite<'a> {
-    material: &'a Material<'a>,
+    material: &'a Material,
     vertex_buffer: VertexBuffer<Vertex>,
     indices_buffer: IndexBuffer<u16>,
 }
@@ -41,7 +41,7 @@ impl<'a> Sprite<'a> {
                   &self.material.program,
                   &uniform! { modelView: array4x4(transform.matrix),
                               perspective: array4x4(*projection),
-                              diffuse_tex: self.material.texture.texture },
+                              diffuse_tex: self.material.texture.texture.as_ref() },
                   params)
             .unwrap();
     }

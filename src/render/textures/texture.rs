@@ -1,11 +1,13 @@
 extern crate cgmath;
 extern crate glium;
 
+use std::rc::Rc;
+
 // A reference to a texture in the collection.
-#[derive(Copy, Clone, Debug)]
-pub struct Texture<'a> {
-    pub texture: &'a glium::texture::Texture2d,
-    pub origin: &'a cgmath::Vector2<i32>,
-    pub dimensions: &'a cgmath::Vector2<i32>,
+#[derive(Clone, Debug)]
+pub struct Texture {
+    pub texture: Rc<glium::texture::Texture2d>,
+    pub origin: cgmath::Vector2<i32>,
+    pub dimensions: cgmath::Vector2<i32>,
 }
 
