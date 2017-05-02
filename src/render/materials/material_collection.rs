@@ -13,13 +13,13 @@ use render::textures::TextureCollection;
 fn file_get_contents<P>(path: P) -> String
     where P: AsRef<Path>
 {
-        use std::io::Read;
+    use std::io::Read;
 
-        let mut file = File::open(path).unwrap();
-        let mut contents = String::new();
-        file.read_to_string(&mut contents).unwrap();
+    let mut file = File::open(path).unwrap();
+    let mut contents = String::new();
+    file.read_to_string(&mut contents).unwrap();
 
-        contents
+    contents
 }
 
 // A collection of materials.
@@ -29,10 +29,9 @@ pub struct MaterialCollection {
 
 impl MaterialCollection {
     // Create a new material collection from an iterator of sources.
-    pub fn new<D, I>(display: &D, sources: I, textures: &TextureCollection)
-        -> MaterialCollection
+    pub fn new<D, I>(display: &D, sources: I, textures: &TextureCollection) -> MaterialCollection
         where D: glium::backend::Facade,
-              I: Iterator<Item = MaterialSource>,
+              I: Iterator<Item = MaterialSource>
     {
         let mut materials = HashMap::new();
         for source in sources {
@@ -40,15 +39,13 @@ impl MaterialCollection {
             let fragment_shader = file_get_contents(source.fragment_shader);
 
             // Build the shader program.
-            let program = glium::Program::from_source(display,
-                                                      &vertex_shader,
-                                                      &fragment_shader,
-                                                      None)
-                .unwrap();
+            let program =
+                glium::Program::from_source(display, &vertex_shader, &fragment_shader, None)
+                    .unwrap();
 
             let material = Material {
                 program: program,
-                texture: textures.texture(&source.texture),
+                texture: textures.slice(&source.texture).clone(),
             };
             materials.insert(source.name.clone(), material);
         }
@@ -61,4 +58,3 @@ impl MaterialCollection {
         &self.materials[name]
     }
 }
-

@@ -4,6 +4,7 @@ extern crate cgmath;
 use render::sprites::mesh::Mesh;
 use render::sprites::vertex::Vertex;
 use render::materials::Material;
+use render::textures::TextureCollection;
 use render::window::Window;
 use render::transform::Transform;
 use glium::{VertexBuffer, IndexBuffer, Frame, DrawParameters, Surface};
@@ -31,17 +32,19 @@ impl<'a> Sprite<'a> {
 
     pub fn render(&self,
                   target: &mut Frame,
+                  textures: &TextureCollection,
                   transform: &Transform,
                   projection: &Matrix4<f32>,
                   params: &DrawParameters) {
 
+        let texture = textures.texture(self.material.texture.id);
         target
             .draw(&self.vertex_buffer,
                   &self.indices_buffer,
                   &self.material.program,
                   &uniform! { modelView: array4x4(transform.matrix),
                               perspective: array4x4(*projection),
-                              diffuse_tex: self.material.texture.texture.as_ref() },
+                              diffuse_tex: texture },
                   params)
             .unwrap();
     }

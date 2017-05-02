@@ -12,4 +12,3 @@ pub struct TextureSource {
     pub texture_file: PathBuf,
     pub slices: Vec<SliceSource>,
 }
-

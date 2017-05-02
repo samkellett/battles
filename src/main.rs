@@ -12,9 +12,9 @@ mod render;
 
 use config::Config;
 
-use render::materials::{MaterialCollection};
+use render::materials::MaterialCollection;
 use render::sprites::{Mesh, Sprite};
-use render::textures::{TextureCollection};
+use render::textures::TextureCollection;
 use render::transform::{Rotation, Transform};
 use render::GliumWindow;
 use render::Window;
@@ -28,11 +28,10 @@ fn main() {
 
     let render_engine = {
         let textures = TextureCollection::new(&window.facade, config.textures.into_iter());
-       
+
         // Load all our textures and materials.
-        let materials = MaterialCollection::new(&window.facade,
-                                                config.materials.into_iter(),
-                                                &textures);
+        let materials =
+            MaterialCollection::new(&window.facade, config.materials.into_iter(), &textures);
 
         RenderEngine {
             window: &window,
@@ -71,7 +70,11 @@ fn main() {
 
         transform.rotate_z(Rotation::Deg(360.0 / 60.0));
         window.draw(|mut target| {
-                        sprite.render(&mut target, &transform, &perspective.into(), &params);
+                        sprite.render(&mut target,
+                                      &render_engine.textures,
+                                      &transform,
+                                      &perspective.into(),
+                                      &params);
                     });
 
         for event in window.facade.poll_events() {

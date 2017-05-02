@@ -8,4 +8,3 @@ pub struct Material {
     pub program: glium::Program,
     pub texture: textures::Texture,
 }
-

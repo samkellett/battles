@@ -7,4 +7,3 @@ pub struct MaterialSource {
     pub fragment_shader: PathBuf,
     pub texture: String,
 }
-
