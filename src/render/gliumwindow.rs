@@ -4,7 +4,7 @@ use glium::backend::glutin_backend as glutin;
 use glium::{Surface, DisplayBuild, VertexBuffer, Frame, Vertex, IndexBuffer};
 use glium::glutin::WindowBuilder;
 use glium::index::PrimitiveType;
-use render::window::Window;
+use super::window::Window;
 
 use config::Config;
 

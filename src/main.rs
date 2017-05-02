@@ -18,6 +18,7 @@ use render::textures::{TextureCollection};
 use render::transform::{Rotation, Transform};
 use render::GliumWindow;
 use render::Window;
+use render::RenderEngine;
 
 fn main() {
     let config = Config::from_file("assets/example.toml");
@@ -25,15 +26,24 @@ fn main() {
 
     let window = GliumWindow::new(&config);
 
-    // Load all our textures and materials.
-    let textures = TextureCollection::new(&window.facade, config.textures.into_iter());
-    let materials = MaterialCollection::new(&window.facade,
-                                            config.materials.into_iter(),
-                                            &textures);
+    let render_engine = {
+        let textures = TextureCollection::new(&window.facade, config.textures.into_iter());
+       
+        // Load all our textures and materials.
+        let materials = MaterialCollection::new(&window.facade,
+                                                config.materials.into_iter(),
+                                                &textures);
 
-    let badger_mat = materials.material("badger_mat");
+        RenderEngine {
+            window: &window,
+            textures: textures,
+            materials: materials,
+        }
+    };
 
-    let sprite = Sprite::from_mesh(Mesh::square(1.0), &badger_mat, &window);
+    let badger_mat = render_engine.materials.material("badger_mat");
+
+    let sprite = Sprite::from_mesh(Mesh::square(1.0), &badger_mat, render_engine.window);
 
     let params = glium::DrawParameters {
         depth: glium::Depth {
