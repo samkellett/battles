@@ -3,33 +3,44 @@
 - [x] Be able to load materials from disk (shader program and texture).
 - [ ] Be able to draw a map of squares.
 
-enum Components {
-    Tranform(f32, f32, f32),
-    Renderable(Sprite, Mesh),
+enum Renderable {
+    Sprite(...),
+    Text(...),
 }
 
+struct Tranform(f32, f32, f32)
+
 struct GameObject {
-    Vec<Components> components;
+    Transform transform;
+    SpriteIndex sprite;
 }
 
 fn main()
 {
     let config = Config::from_file("assets/game.toml")
 
-    // Initialise
-    let game_objects = GameObjects::from_config(&config);
-        // ...internally... a vector of GameObjects.
-
-    // Initialse engines.
-    let renderer = RenderEngine::from_config(&config, &game_objects);
+    // Initialise render engine (and load all sprites)
+    let renderer = RenderEngine::from_config(&config);
         // ...internally...
         let textures = ...
         let materials = ...
 
-        //  ...makes a vector of references to renderable components.
+    // ...
+    let updater = LuaEngine::new();
+
+    // Load all game objects, gets sprite index from renderer.
+    let game_objects = GameObjects::from_config(&config, &renderer);
+        // ...internally... a vector of GameObjects.
+
+    let executor = SerialExecutor::new();
 
     loop {
-        renderer.draw()
+        for game_object in game_objects {
+            game_object.update(&updater);
+            game_object.draw(&renderer);
+        }
+
+        executor.execute(&updater, &renderer);
     }
 }
 

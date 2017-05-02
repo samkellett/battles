@@ -1,16 +1,18 @@
 title = "Battles"
 
-[[textures]]
-texture_file = "assets/opengl.png"
+[[sprites]]
+name = "logo"
 
-    [[textures.slices]]
-    name = "badger"
+    [sprites.texture]
+    file = "assets/opengl.png"
     origin = [0, 0]
     dimensions = [600, 297]
 
-[[materials]]
-name = "badger_mat"
-vertex_shader = "assets/shaders/basic.vert"
-fragment_shader = "assets/shaders/basic.frag"
-texture = "badger"
+    [sprites.program]
+    vertex_shader = "assets/shaders/basic.vert"
+    fragment_shader = "assets/shaders/basic.frag"
+
+[[game_objects]]
+position = [0, 0]
+sprite = "logo"
 
