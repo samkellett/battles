@@ -61,7 +61,7 @@ fn main() {
 
         transform.rotate_z(Rotation::Deg(360.0 / 60.0));
         window.draw(|mut target| {
-                        sprite.render(&mut target, &transform, &perspective.into(), &params);
+                        sprite.render(&mut target, &textures, &transform, &perspective.into(), &params);
                     });
 
         for event in window.facade.poll_events() {

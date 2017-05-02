@@ -48,7 +48,7 @@ impl MaterialCollection {
 
             let material = Material {
                 program: program,
-                texture: textures.texture(&source.texture),
+                texture: textures.slice(&source.texture).clone(),
             };
             materials.insert(source.name.clone(), material);
         }
