@@ -13,9 +13,18 @@ pub struct GliumWindow {
 }
 
 impl GliumWindow {
+    /*
     pub fn new(config: &Config) -> GliumWindow {
         let facade = WindowBuilder::new()
             .with_title(config.title.clone())
+            .build_glium()
+            .unwrap();
+
+        GliumWindow { facade: facade }
+    }
+    */
+    pub fn new() -> GliumWindow {
+        let facade = WindowBuilder::new()
             .build_glium()
             .unwrap();
 

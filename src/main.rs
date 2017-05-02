@@ -10,39 +10,49 @@ extern crate image;
 mod config;
 mod render;
 
-use config::Config;
-
-use render::materials::MaterialCollection;
+use render::{GliumWindow, Window};
 use render::sprites::{Mesh, Sprite};
-use render::textures::TextureCollection;
-use render::transform::{Rotation, Transform};
-use render::GliumWindow;
-use render::Window;
-use render::RenderEngine;
+use render::textures::Texture;
+use render::transform::{Transform, Rotation};
 
 fn main() {
-    let config = Config::from_file("assets/example.toml");
-    println!("{:?}", config);
+    let window = GliumWindow::new();
 
-    let window = GliumWindow::new(&config);
+    let sprite = {
+        let texture = {
+            let image = {
+                let source = std::path::PathBuf::from("assets/opengl.png");
+                let file = std::fs::File::open(source).unwrap();
+                let file = std::io::BufReader::new(file);
 
-    let render_engine = {
-        let textures = TextureCollection::new(&window.facade, config.textures.into_iter());
+                image::load(file, image::PNG)
+                    .unwrap()
+                    .to_rgba()
+            };
 
-        // Load all our textures and materials.
-        let materials =
-            MaterialCollection::new(&window.facade, config.materials.into_iter(), &textures);
+            let image_dimensions = image.dimensions();
+            let image = glium::texture::RawImage2d::from_raw_rgba_reversed(image.into_raw(),
+                                                                           image_dimensions);
+            glium::texture::Texture2d::new(&window.facade, image).unwrap()
+        };
+        let mesh = Mesh::square(1.0);
+        
+        // Example shaders.
+        let v = include_str!("../assets/shaders/basic.vert");
+        let f = include_str!("../assets/shaders/basic.frag");
 
-        RenderEngine {
-            window: &window,
-            textures: textures,
-            materials: materials,
-        }
+        let program = glium::Program::from_source(&window.facade,
+                                                  v,
+                                                  f,
+                                                  None)
+            .unwrap();
+
+        let tex = Texture {
+            texture: texture, origin: cgmath::vec2(0, 0), dimensions: cgmath::vec2(256,256),
+        };
+
+        Sprite::new(mesh, tex, program, &window)
     };
-
-    let badger_mat = render_engine.materials.material("badger_mat");
-
-    let sprite = Sprite::from_mesh(Mesh::square(1.0), &badger_mat, render_engine.window);
 
     let params = glium::DrawParameters {
         depth: glium::Depth {
@@ -53,7 +63,6 @@ fn main() {
         ..Default::default()
     };
 
-    // The event loop.
     let mut transform = Transform::new();
 
     loop {
@@ -71,7 +80,6 @@ fn main() {
         transform.rotate_z(Rotation::Deg(360.0 / 60.0));
         window.draw(|mut target| {
                         sprite.render(&mut target,
-                                      &render_engine.textures,
                                       &transform,
                                       &perspective.into(),
                                       &params);
