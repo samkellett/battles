@@ -1,3 +1,3 @@
 mod texture;
 
-pub use self::texture::Texture;
+pub use self::texture::{TextureSource, Texture};
