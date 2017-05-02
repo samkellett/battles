@@ -10,11 +10,11 @@ extern crate image;
 mod config;
 mod render;
 
-use render::{GliumWindow, Window};
-use render::textures::Texture;
-use render::transform::{Transform, Rotation};
 use config::Config;
+
+use render::{GliumWindow, Window};
 use render::sprites::Sprite;
+use render::transform::{Transform, Rotation};
 
 fn main() {
     let config = Config::from_file("assets/example.toml");

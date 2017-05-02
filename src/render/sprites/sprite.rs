@@ -1,15 +1,17 @@
 extern crate glium;
 extern crate cgmath;
 
+use render::{GliumWindow, Window};
 use render::sprites::mesh::Mesh;
 use render::sprites::vertex::Vertex;
-use render::{GliumWindow, Window};
-use glium::{VertexBuffer, IndexBuffer, Frame, DrawParameters, Surface, Program};
 use render::textures::{TextureSource, Texture};
 use render::transform::Transform;
+
 use cgmath::Matrix4;
 use cgmath::conv::array4x4;
-use config::Config;
+
+use glium::{VertexBuffer, IndexBuffer, Frame, DrawParameters, Surface};
+
 use std::fs::File;
 use std::path::Path;
 
