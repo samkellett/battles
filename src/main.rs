@@ -11,30 +11,33 @@ mod config;
 mod render;
 
 use config::Config;
-
+use glium::DrawParameters;
 use render::{GliumWindow, Window};
 use render::sprites::Sprite;
 use render::transform::{Transform, Rotation};
+use cgmath::Matrix4;
 
-fn main() {
-    let config = Config::from_file("assets/example.toml");
-    println!("{:?}", config);
+struct RenderEngine<'a> {
+    window: GliumWindow,
+    sprites: Vec<Sprite>,
+    perspective: Matrix4<f32>,
+    draw_parameters: DrawParameters<'a>,
+}
 
-    let window = GliumWindow::new(&config);
-    let sprites = Sprite::from_config(&window, config.sprites.into_iter());
+impl<'a> RenderEngine<'a> {
+    fn draw(&self, transform: &Transform) {
+        self.window
+            .draw(|mut target| for sprite in &self.sprites {
+                      sprite.render(&mut target,
+                                    &transform,
+                                    &self.perspective,
+                                    &self.draw_parameters);
+                  });
+    }
 
-    let params = glium::DrawParameters {
-        depth: glium::Depth {
-            test: glium::draw_parameters::DepthTest::IfLess,
-            write: true,
-            ..Default::default()
-        },
-        ..Default::default()
-    };
-
-    let mut transform = Transform::new();
-
-    loop {
+    fn new(config: Config) -> RenderEngine<'a> {
+        let window = GliumWindow::new(&config);
+        let sprites = Sprite::from_config(&window, config.sprites.into_iter());
         let perspective = {
             let aspect = window.get_aspect();
             let span = 10.0; // World units between the left and right sides of the window
@@ -46,17 +49,39 @@ fn main() {
                           1.0)
         };
 
-        transform.rotate_z(Rotation::Deg(360.0 / 60.0));
-        window.draw(|mut target| {
-                        for sprite in &sprites {
-                            sprite.render(&mut target,
-                                          &transform,
-                                          &perspective.into(),
-                                          &params);
-                        }
-                    });
+        let draw_parameters = DrawParameters {
+            depth: glium::Depth {
+                test: glium::draw_parameters::DepthTest::IfLess,
+                write: true,
+                ..Default::default()
+            },
+            ..Default::default()
+        };
 
-        for event in window.facade.poll_events() {
+        RenderEngine {
+            window,
+            sprites,
+            perspective,
+            draw_parameters,
+        }
+    }
+}
+
+fn main() {
+    let config = Config::from_file("assets/example.toml");
+    let render_engine = RenderEngine::new(config);
+
+    let mut transform = Transform::new();
+
+    loop {
+        transform.rotate_z(Rotation::Deg(360.0 / 60.0));
+
+        // This will be
+        // render_engine.draw(sprite_index, &transform); // Add command to buffer
+        // render_engine.render(); // Render all commands
+        render_engine.draw(&transform);
+
+        for event in render_engine.window.facade.poll_events() {
             match event {
                 // The window has been closed.
                 glium::glutin::Event::Closed => return,
