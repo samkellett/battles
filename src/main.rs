@@ -35,9 +35,9 @@ impl<'a> RenderEngine<'a> {
                   });
     }
 
-    fn new(config: Config) -> RenderEngine<'a> {
+    fn new(config: &Config) -> RenderEngine<'a> {
         let window = GliumWindow::new(&config);
-        let sprites = Sprite::from_config(&window, config.sprites.into_iter());
+        let sprites = Sprite::from_config(&window, config.sprites.iter());
         let perspective = {
             let aspect = window.get_aspect();
             let span = 10.0; // World units between the left and right sides of the window
@@ -69,7 +69,7 @@ impl<'a> RenderEngine<'a> {
 
 fn main() {
     let config = Config::from_file("assets/example.toml");
-    let render_engine = RenderEngine::new(config);
+    let render_engine = RenderEngine::new(&config);
 
     let mut transform = Transform::new();
 

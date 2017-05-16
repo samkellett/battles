@@ -40,7 +40,7 @@ pub struct Sprite {
 }
 
 // Load a file into a string.
-fn file_get_contents<P>(path: P) -> String
+fn file_get_contents<P>(path: &P) -> String
     where P: AsRef<Path>
 {
     use std::io::Read;
@@ -53,16 +53,16 @@ fn file_get_contents<P>(path: P) -> String
 }
 
 impl Sprite {
-    pub fn from_source(window: &GliumWindow, source: SpriteSource) -> Sprite
+    pub fn from_source(window: &GliumWindow, source: &SpriteSource) -> Sprite
     {
-        let name = source.name;
+        let name = source.name.clone();
         let mesh = Mesh::square(1.0);
         let vertex_buffer = window.create_vertex_buffer(&mesh.verts);
         let indices_buffer = window.create_index_buffer(&mesh.indices);
-        let texture = Texture::from_source(&window.facade, source.texture);
+        let texture = Texture::from_source(&window.facade, &source.texture);
         let program = {
-            let vertex_shader = file_get_contents(source.program.vertex_shader);
-            let fragment_shader = file_get_contents(source.program.fragment_shader);
+            let vertex_shader = file_get_contents(&source.program.vertex_shader);
+            let fragment_shader = file_get_contents(&source.program.fragment_shader);
 
             glium::Program::from_source(&window.facade, &vertex_shader, &fragment_shader, None)
                 .unwrap()
@@ -71,16 +71,10 @@ impl Sprite {
         Sprite { name, mesh, texture, program, vertex_buffer, indices_buffer }
     }
 
-    pub fn from_config<I>(window: &GliumWindow, sources: I) -> Vec<Sprite>
-        where I: Iterator<Item = SpriteSource>
+    pub fn from_config<'a, I>(window: &GliumWindow, sources: I) -> Vec<Sprite>
+        where I: Iterator<Item = &'a SpriteSource>
     {
-        let mut sprites = Vec::new();
-
-        for source in sources {
-            sprites.push(Sprite::from_source(window, source))
-        }
-
-        sprites
+        sources.map(|s| Sprite::from_source(window, s)).collect::<Vec<_>>()
     }
 
     pub fn render(&self,

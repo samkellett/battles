@@ -25,13 +25,13 @@ pub struct Texture {
 }
 
 impl Texture {
-    pub fn from_source<D>(display: &D, source: TextureSource) -> Texture
+    pub fn from_source<D>(display: &D, source: &TextureSource) -> Texture
         where D: glium::backend::Facade
     {
         let texture = {
             // Load the texture.
             let image = {
-                let file = File::open(source.file).unwrap();
+                let file = File::open(&source.file).unwrap();
                 let file = BufReader::new(file);
 
                 image::load(file, image::PNG).unwrap().to_rgba()
