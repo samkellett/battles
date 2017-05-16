@@ -12,8 +12,8 @@ mod render;
 mod world;
 
 use config::Config;
-use render::{RenderEngine};
-use render::transform::{Transform, Rotation};
+use render::RenderEngine;
+use render::transform::Rotation;
 use world::GameObject;
 
 fn main() {
@@ -21,18 +21,17 @@ fn main() {
     println!("{:?}", config);
 
     let render_engine = RenderEngine::new(&config);
-    let game_objects = GameObject::from_config(config.game_objects.into_iter(), 
-                                               &|s| render_engine.get_sprite_id(s));
-
-    let mut transform = Transform::new();
+    let mut game_objects = GameObject::from_config(config.game_objects.iter(),
+                                                   &|s| render_engine.get_sprite_id(s));
 
     loop {
-        transform.rotate_z(Rotation::Deg(360.0 / 60.0));
+        let mut game_object = game_objects.first_mut().unwrap();
+        game_object.transform.rotate_z(Rotation::Deg(360.0 / 60.0));
 
         // This will be
         // render_engine.draw(sprite_index, &transform); // Add command to buffer
         // render_engine.render(); // Render all commands
-        render_engine.draw(&transform);
+        render_engine.draw(&game_object.transform);
 
         for event in render_engine.window.facade.poll_events() {
             match event {

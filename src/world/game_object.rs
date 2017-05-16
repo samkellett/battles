@@ -1,4 +1,4 @@
-use render::sprites::{Sprite, SpriteId};
+use render::sprites::SpriteId;
 use render::transform::Transform;
 
 // on-disk representation.
@@ -14,7 +14,7 @@ pub struct GameObject {
 }
 
 impl GameObject {
-    pub fn new<F>(source: GameObjectSource, get_sprite_id: F) -> GameObject
+    pub fn new<F>(source: &GameObjectSource, get_sprite_id: F) -> GameObject
         where F: Fn(&str) -> SpriteId
     {
         let mut transform = Transform::new();
@@ -26,9 +26,9 @@ impl GameObject {
         }
     }
 
-    pub fn from_config<I, F>(sources: I, get_sprite_id: &F) -> Vec<GameObject>
+    pub fn from_config<'a, I, F>(sources: I, get_sprite_id: &F) -> Vec<GameObject>
         where F: Fn(&str) -> SpriteId,
-              I: Iterator<Item = GameObjectSource>
+              I: Iterator<Item = &'a GameObjectSource>
     {
         sources.map(|s| GameObject::new(s, get_sprite_id)).collect::<Vec<_>>()
     }
