@@ -9,12 +9,14 @@ extern crate image;
 
 mod config;
 mod render;
+mod world;
 
 use config::Config;
 use glium::DrawParameters;
 use render::{GliumWindow, Window};
-use render::sprites::Sprite;
+use render::sprites::{Sprite, SpriteId};
 use render::transform::{Transform, Rotation};
+use world::GameObject;
 use cgmath::Matrix4;
 
 struct RenderEngine<'a> {
@@ -25,6 +27,11 @@ struct RenderEngine<'a> {
 }
 
 impl<'a> RenderEngine<'a> {
+    fn get_sprite_id(&self, name: &str) -> SpriteId {
+        let index = self.sprites.iter().position(|ref s| s.name == name).unwrap();
+        SpriteId(index)
+    }
+
     fn draw(&self, transform: &Transform) {
         self.window
             .draw(|mut target| for sprite in &self.sprites {
@@ -69,7 +76,11 @@ impl<'a> RenderEngine<'a> {
 
 fn main() {
     let config = Config::from_file("assets/example.toml");
+    println!("{:?}", config);
+
     let render_engine = RenderEngine::new(&config);
+    let game_objects = GameObject::from_config(config.game_objects.into_iter(), 
+                                               &|s| render_engine.get_sprite_id(s));
 
     let mut transform = Transform::new();
 
@@ -89,5 +100,5 @@ fn main() {
             }
         }
     }
-
 }
+

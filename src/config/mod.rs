@@ -4,11 +4,13 @@ use std::fs::File;
 use std::path::Path;
 
 use render::sprites::SpriteSource;
+use world::GameObjectSource;
 
 #[derive(Debug, Deserialize)]
 pub struct Config {
     pub title: String,
     pub sprites: Vec<SpriteSource>,
+    pub game_objects: Vec<GameObjectSource>,
 }
 
 impl Config {
